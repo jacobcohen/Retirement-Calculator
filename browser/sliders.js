@@ -17,7 +17,9 @@ export default class Sliders extends Component {
             alreadySaved: 5000,
             marketReturn: 0.03,
             data: [],
-            finalAmount: 0
+            finalAmount: 0,
+            finalSal: 0,
+            curDay: new Date()
         };
 
         this.handleCurrentAge = _.throttle(this.handleCurrentAge.bind(this),16, {'trailing': true, 'leading': false});
@@ -117,7 +119,7 @@ export default class Sliders extends Component {
         const expectedMarketReturns = this.state.marketReturn;
         const howLongTillRetire = this.state.retireAge - this.state.currentAge;
         const expectedSalaryIncreaseAYear = this.state.salaryIncrease;
-        const today = new Date();
+        const today = this.state.curDay;
         const months = howLongTillRetire * 12;
         const rateOfReturnAMonth = Math.pow(expectedMarketReturns + 1,(1 / 12)) - 1;
 
@@ -145,14 +147,22 @@ export default class Sliders extends Component {
                 begOfMonthSaved = timeMoney[x - 1].saved;
             }
 
+
             monthlyFromSalary = curSalary * percentOfSalSavingAYear / 12;
             endOfMonthSaved = begOfMonthSaved * (1 + rateOfReturnAMonth);
             timeMoney[x].saved  = endOfMonthSaved + monthlyFromSalary;
             curMonth = new Date(curMonth.getFullYear(), curMonth.getMonth() + 1, 1);
-        }
 
+
+            if(x === months-1){
+                this.setState({
+                    finalSal: curSalary,
+                    finalAmount: endOfMonthSaved + monthlyFromSalary
+                });
+            }
+        }
         this.setState({
-            finalAmount: timeMoney[x - 1].saved,
+
             data: timeMoney.slice(0,x)
         });
     }
@@ -273,23 +283,25 @@ export default class Sliders extends Component {
                         style={{width: 500}}
                     />
                 </div>
-                <ResponsiveContainer height={650}>
+                <div id="finalSavings">
+                    <h1>SAVINGS BY RETIREMENT</h1>
+                    <h1>${ this.formatMoney(this.state.finalAmount,0,'.',',') }</h1>
+                </div>
+                <ResponsiveContainer position="absolute" width="80%" height={500}>
                     <LineChart  data={this.state.data}
                                margin={{top: 5, right: 30, left: 20, bottom: 5}}
                     >
                         <XAxis dataKey="date" tickFormatter={(date) => date.slice(2).split('-').join(' ')} />
                         <YAxis tickFormatter={(num) => '$' + this.formatMoney(num, 0, '.', ',')} />
-                        <CartesianGrid strokeDasharray="1 1" />
                         <Tooltip labelFormatter={(date) => date.slice(2).split('-').join(' ')} formatter={(num) => '$' + this.formatMoney(num, 0, '.', ',')} />
                         <Line isAnimationActive={false} type="monotone" dataKey="saved" stroke="#8884d8" activeDot={{r: 8}}/>
                     </LineChart>
                 </ResponsiveContainer>
-                <div id="finalSavings">
-                    <h1>SAVINGS BY RETIREMENT</h1>
-                    <h1>${ this.formatMoney(this.state.finalAmount,0,'.',',') }</h1>
-                </div>
+
             </div>
         )
 
     }
 }
+
+//                        <CartesianGrid strokeDasharray="1 1" />  you can add this back under YAxis for the LineChart

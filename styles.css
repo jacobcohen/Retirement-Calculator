@@ -1,11 +1,11 @@
 #finalSavings {
-    position:absolute;
+    position:relative;
     top:50%;
-    left:50%;
-    height:50px;
+    left:0%;
+    height:1px;
     z-index:1;
-    margin-left: -190px;
-    margin-top:-100px;
+    margin-left: 0;
+    text-align: -webkit-center;
 }
 
 .centerMe {

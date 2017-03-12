@@ -31214,7 +31214,9 @@ var Sliders = function (_Component) {
             alreadySaved: 5000,
             marketReturn: 0.03,
             data: [],
-            finalAmount: 0
+            finalAmount: 0,
+            finalSal: 0,
+            curDay: new Date()
         };
 
         _this.handleCurrentAge = _lodash2.default.throttle(_this.handleCurrentAge.bind(_this), 16, { 'trailing': true, 'leading': false });
@@ -31322,7 +31324,7 @@ var Sliders = function (_Component) {
             var expectedMarketReturns = this.state.marketReturn;
             var howLongTillRetire = this.state.retireAge - this.state.currentAge;
             var expectedSalaryIncreaseAYear = this.state.salaryIncrease;
-            var today = new Date();
+            var today = this.state.curDay;
             var months = howLongTillRetire * 12;
             var rateOfReturnAMonth = Math.pow(expectedMarketReturns + 1, 1 / 12) - 1;
 
@@ -31354,10 +31356,16 @@ var Sliders = function (_Component) {
                 endOfMonthSaved = begOfMonthSaved * (1 + rateOfReturnAMonth);
                 timeMoney[x].saved = endOfMonthSaved + monthlyFromSalary;
                 curMonth = new Date(curMonth.getFullYear(), curMonth.getMonth() + 1, 1);
-            }
 
+                if (x === months - 1) {
+                    this.setState({
+                        finalSal: curSalary,
+                        finalAmount: endOfMonthSaved + monthlyFromSalary
+                    });
+                }
+            }
             this.setState({
-                finalAmount: timeMoney[x - 1].saved,
+
                 data: timeMoney.slice(0, x)
             });
         }
@@ -31546,29 +31554,6 @@ var Sliders = function (_Component) {
                     })
                 ),
                 _react2.default.createElement(
-                    _recharts.ResponsiveContainer,
-                    { height: 650 },
-                    _react2.default.createElement(
-                        _recharts.LineChart,
-                        { data: this.state.data,
-                            margin: { top: 5, right: 30, left: 20, bottom: 5 }
-                        },
-                        _react2.default.createElement(_recharts.XAxis, { dataKey: 'date', tickFormatter: function tickFormatter(date) {
-                                return date.slice(2).split('-').join(' ');
-                            } }),
-                        _react2.default.createElement(_recharts.YAxis, { tickFormatter: function tickFormatter(num) {
-                                return '$' + _this2.formatMoney(num, 0, '.', ',');
-                            } }),
-                        _react2.default.createElement(_recharts.CartesianGrid, { strokeDasharray: '1 1' }),
-                        _react2.default.createElement(_recharts.Tooltip, { labelFormatter: function labelFormatter(date) {
-                                return date.slice(2).split('-').join(' ');
-                            }, formatter: function formatter(num) {
-                                return '$' + _this2.formatMoney(num, 0, '.', ',');
-                            } }),
-                        _react2.default.createElement(_recharts.Line, { isAnimationActive: false, type: 'monotone', dataKey: 'saved', stroke: '#8884d8', activeDot: { r: 8 } })
-                    )
-                ),
-                _react2.default.createElement(
                     'div',
                     { id: 'finalSavings' },
                     _react2.default.createElement(
@@ -31582,6 +31567,28 @@ var Sliders = function (_Component) {
                         '$',
                         this.formatMoney(this.state.finalAmount, 0, '.', ',')
                     )
+                ),
+                _react2.default.createElement(
+                    _recharts.ResponsiveContainer,
+                    { position: 'absolute', width: '80%', height: 500 },
+                    _react2.default.createElement(
+                        _recharts.LineChart,
+                        { data: this.state.data,
+                            margin: { top: 5, right: 30, left: 20, bottom: 5 }
+                        },
+                        _react2.default.createElement(_recharts.XAxis, { dataKey: 'date', tickFormatter: function tickFormatter(date) {
+                                return date.slice(2).split('-').join(' ');
+                            } }),
+                        _react2.default.createElement(_recharts.YAxis, { tickFormatter: function tickFormatter(num) {
+                                return '$' + _this2.formatMoney(num, 0, '.', ',');
+                            } }),
+                        _react2.default.createElement(_recharts.Tooltip, { labelFormatter: function labelFormatter(date) {
+                                return date.slice(2).split('-').join(' ');
+                            }, formatter: function formatter(num) {
+                                return '$' + _this2.formatMoney(num, 0, '.', ',');
+                            } }),
+                        _react2.default.createElement(_recharts.Line, { isAnimationActive: false, type: 'monotone', dataKey: 'saved', stroke: '#8884d8', activeDot: { r: 8 } })
+                    )
                 )
             );
         }
@@ -31589,6 +31596,9 @@ var Sliders = function (_Component) {
 
     return Sliders;
 }(_react.Component);
+
+//                        <CartesianGrid strokeDasharray="1 1" />  you can add this back under YAxis for the LineChart
+
 
 exports.default = Sliders;
 
