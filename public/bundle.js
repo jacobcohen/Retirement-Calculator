@@ -31207,7 +31207,7 @@ var Sliders = function (_Component) {
 
         _this.state = {
             currentAge: 25,
-            retireAge: 70,
+            retireAge: 65,
             salary: 65000,
             salaryIncrease: 0.02,
             salarySaved: 0.05,
@@ -31215,7 +31215,7 @@ var Sliders = function (_Component) {
             marketReturn: 0.03,
             data: [],
             finalAmount: 0,
-            finalSal: 0,
+            RAM: 0,
             curDay: new Date()
         };
 
@@ -31249,7 +31249,6 @@ var Sliders = function (_Component) {
     }, {
         key: 'handleCurrentAge',
         value: function handleCurrentAge(event, value) {
-            //event.preventDefault()
             if (value > this.state.retireAge) {
                 this.setState({ currentAge: value, retireAge: value + 1 });
             } else {
@@ -31283,35 +31282,30 @@ var Sliders = function (_Component) {
     }, {
         key: 'handleSalary',
         value: function handleSalary(event, value) {
-            //event.preventDefault()
             this.setState({ salary: value });
             this.doTheDataThrottle();
         }
     }, {
         key: 'handleSalaryIncrease',
         value: function handleSalaryIncrease(event, value) {
-            //event.preventDefault()
             this.setState({ salaryIncrease: value });
             this.doTheDataThrottle();
         }
     }, {
         key: 'handleSalarySaved',
         value: function handleSalarySaved(event, value) {
-            //event.preventDefault()
             this.setState({ salarySaved: value });
             this.doTheDataThrottle();
         }
     }, {
         key: 'handleAlreadySaved',
         value: function handleAlreadySaved(event, value) {
-            //event.preventDefault()
             this.setState({ alreadySaved: value });
             this.doTheDataThrottle();
         }
     }, {
         key: 'handleMarketReturn',
         value: function handleMarketReturn(event, value) {
-            //event.preventDefault()
             this.setState({ marketReturn: value });
             this.doTheDataThrottle();
         }
@@ -31359,7 +31353,7 @@ var Sliders = function (_Component) {
 
                 if (x === months - 1) {
                     this.setState({
-                        finalSal: curSalary,
+                        RAM: (endOfMonthSaved + monthlyFromSalary) / curSalary,
                         finalAmount: endOfMonthSaved + monthlyFromSalary
                     });
                 }
@@ -31390,204 +31384,267 @@ var Sliders = function (_Component) {
         value: function render() {
             var _this2 = this;
 
-            var styles = {
-                root: {
-                    display: 'flex',
-                    height: 84,
-                    flexDirection: 'row',
-                    justifyContent: 'space-around'
-                }
-            };
-
             return _react2.default.createElement(
                 'div',
                 null,
                 _react2.default.createElement(
-                    'h1',
-                    null,
-                    'Retirement Calculator'
+                    'div',
+                    { id: 'title' },
+                    _react2.default.createElement(
+                        'span',
+                        { style: { 'paddingRight': '20px' } },
+                        _react2.default.createElement(
+                            'h1',
+                            null,
+                            'Retirement Calculator'
+                        )
+                    ),
+                    _react2.default.createElement(
+                        'span',
+                        { style: { 'fontSize': 'medium' } },
+                        'by Jacob Cohen'
+                    )
                 ),
+                _react2.default.createElement('div', { id: 'line' }),
                 _react2.default.createElement(
                     'div',
-                    { style: styles.root },
+                    { className: 'sliderRow' },
                     _react2.default.createElement(
-                        'b',
-                        null,
-                        'How old are you '
+                        'div',
+                        { className: 'col-md-4' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'textAboveSlider' },
+                            _react2.default.createElement(
+                                'span',
+                                { style: { 'fontSize': 'medium' } },
+                                'Current Age'
+                            ),
+                            _react2.default.createElement(
+                                'span',
+                                { style: { 'paddingLeft': '20px' } },
+                                _react2.default.createElement(
+                                    'h1',
+                                    null,
+                                    this.state.currentAge
+                                )
+                            )
+                        ),
+                        _react2.default.createElement(_Slider2.default, {
+                            min: 0,
+                            max: 100,
+                            step: 1,
+                            defaultValue: 25,
+                            value: this.state.currentAge,
+                            onChange: this.handleCurrentAge
+                        })
                     ),
                     _react2.default.createElement(
-                        'h1',
-                        null,
-                        this.state.currentAge
-                    ),
-                    _react2.default.createElement(_Slider2.default, {
-                        min: 0,
-                        max: 100,
-                        step: 1,
-                        defaultValue: 25,
-                        value: this.state.currentAge,
-                        onChange: this.handleCurrentAge,
-                        style: { width: 200 }
-                    }),
-                    _react2.default.createElement(
-                        'b',
-                        null,
-                        'Target Retirement Age'
-                    ),
-                    _react2.default.createElement(
-                        'h1',
-                        null,
-                        this.state.retireAge
-                    ),
-                    _react2.default.createElement(_Slider2.default, {
-                        min: this.state.currentAge + 1,
-                        max: 101,
-                        step: 1,
-                        defaultValue: 70,
-                        value: this.state.retireAge,
-                        onChange: this.handleRetireAge,
-                        style: { width: 200 }
-                    }),
-                    _react2.default.createElement(
-                        'b',
-                        null,
-                        'Current Salary (post-tax)'
+                        'div',
+                        { className: 'col-md-4' },
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'fontSize': 'medium' } },
+                            'Target Retirement Age'
+                        ),
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'paddingLeft': '20px' } },
+                            _react2.default.createElement(
+                                'h1',
+                                null,
+                                this.state.retireAge
+                            )
+                        ),
+                        _react2.default.createElement(_Slider2.default, {
+                            min: this.state.currentAge + 1,
+                            max: 101,
+                            step: 1,
+                            defaultValue: 70,
+                            value: this.state.retireAge,
+                            onChange: this.handleRetireAge
+                        })
                     ),
                     _react2.default.createElement(
-                        'h1',
-                        null,
-                        '$',
-                        this.formatMoney(this.state.salary, 0, '.', ',')
-                    ),
-                    _react2.default.createElement(_Slider2.default, {
-                        min: 0,
-                        max: 500000,
-                        step: 500,
-                        defaultValue: 65000,
-                        value: this.state.salary,
-                        onChange: this.handleSalary,
-                        style: { width: 200 }
-                    }),
-                    _react2.default.createElement(
-                        'b',
-                        null,
-                        'Expected Salary Increase/year'
-                    ),
-                    _react2.default.createElement(
-                        'h1',
-                        null,
-                        (this.state.salaryIncrease * 100).toFixed(0),
-                        '%'
-                    ),
-                    _react2.default.createElement(_Slider2.default, {
-                        min: 0,
-                        max: .1,
-                        step: 0.01,
-                        defaultValue: 0.02,
-                        value: this.state.salaryIncrease,
-                        onChange: this.handleSalaryIncrease,
-                        style: { width: 200 }
-                    })
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { style: styles.root },
-                    _react2.default.createElement(
-                        'b',
-                        null,
-                        'Percent of salary saved/year'
-                    ),
-                    _react2.default.createElement(
-                        'h1',
-                        null,
-                        (this.state.salarySaved * 100).toFixed(0),
-                        '%'
-                    ),
-                    _react2.default.createElement(_Slider2.default, {
-                        min: 0,
-                        max: 1,
-                        step: 0.05,
-                        defaultValue: 0.02,
-                        value: this.state.salarySaved,
-                        onChange: this.handleSalarySaved,
-                        style: { width: 200 }
-                    }),
-                    _react2.default.createElement(
-                        'b',
-                        null,
-                        'Money Already Saved'
-                    ),
-                    _react2.default.createElement(
-                        'h1',
-                        null,
-                        '$',
-                        this.formatMoney(this.state.alreadySaved, 0, '.', ',')
-                    ),
-                    _react2.default.createElement(_Slider2.default, {
-                        min: 0,
-                        max: 100000,
-                        step: 500,
-                        defaultValue: 5000,
-                        value: this.state.alreadySaved,
-                        onChange: this.handleAlreadySaved,
-                        style: { width: 500 }
-                    }),
-                    _react2.default.createElement(
-                        'b',
-                        null,
-                        'Expected Yearly Market Return'
-                    ),
-                    _react2.default.createElement(
-                        'h1',
-                        null,
-                        (this.state.marketReturn * 100).toFixed(0),
-                        '%'
-                    ),
-                    _react2.default.createElement(_Slider2.default, {
-                        min: 0,
-                        max: 0.2,
-                        step: 0.01,
-                        defaultValue: 0.03,
-                        value: this.state.marketReturn,
-                        onChange: this.handleMarketReturn,
-                        style: { width: 500 }
-                    })
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { id: 'finalSavings' },
-                    _react2.default.createElement(
-                        'h1',
-                        null,
-                        'SAVINGS BY RETIREMENT'
-                    ),
-                    _react2.default.createElement(
-                        'h1',
-                        null,
-                        '$',
-                        this.formatMoney(this.state.finalAmount, 0, '.', ',')
+                        'div',
+                        { className: 'col-md-4' },
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'fontSize': 'medium' } },
+                            'Current Salary (Post-Tax)'
+                        ),
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'paddingLeft': '20px' } },
+                            _react2.default.createElement(
+                                'h1',
+                                null,
+                                '$',
+                                this.formatMoney(this.state.salary, 0, '.', ',')
+                            )
+                        ),
+                        _react2.default.createElement(_Slider2.default, {
+                            min: 0,
+                            max: 500000,
+                            step: 500,
+                            defaultValue: 65000,
+                            value: this.state.salary,
+                            onChange: this.handleSalary
+                        })
                     )
                 ),
                 _react2.default.createElement(
-                    _recharts.ResponsiveContainer,
-                    { position: 'absolute', width: '80%', height: 500 },
+                    'div',
+                    { className: 'sliderRow' },
                     _react2.default.createElement(
-                        _recharts.LineChart,
-                        { data: this.state.data,
-                            margin: { top: 5, right: 30, left: 20, bottom: 5 }
-                        },
-                        _react2.default.createElement(_recharts.XAxis, { dataKey: 'date', tickFormatter: function tickFormatter(date) {
-                                return date.slice(2).split('-').join(' ');
-                            } }),
-                        _react2.default.createElement(_recharts.YAxis, { tickFormatter: function tickFormatter(num) {
-                                return '$' + _this2.formatMoney(num, 0, '.', ',');
-                            } }),
-                        _react2.default.createElement(_recharts.Tooltip, { labelFormatter: function labelFormatter(date) {
-                                return date.slice(2).split('-').join(' ');
-                            }, formatter: function formatter(num) {
-                                return '$' + _this2.formatMoney(num, 0, '.', ',');
-                            } }),
-                        _react2.default.createElement(_recharts.Line, { isAnimationActive: false, type: 'monotone', dataKey: 'saved', stroke: '#8884d8', activeDot: { r: 8 } })
+                        'div',
+                        { className: 'col-md-3' },
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'fontSize': 'medium' } },
+                            'Expected Salary Increase/Year'
+                        ),
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'paddingLeft': '20px' } },
+                            _react2.default.createElement(
+                                'h1',
+                                null,
+                                (this.state.salaryIncrease * 100).toFixed(0),
+                                '%'
+                            )
+                        ),
+                        _react2.default.createElement(_Slider2.default, {
+                            min: 0,
+                            max: 0.1,
+                            step: 0.01,
+                            defaultValue: 0.02,
+                            value: this.state.salaryIncrease,
+                            onChange: this.handleSalaryIncrease
+                        })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-3' },
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'fontSize': 'medium' } },
+                            'Percent of Salary Saved/Year'
+                        ),
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'paddingLeft': '20px' } },
+                            _react2.default.createElement(
+                                'h1',
+                                null,
+                                (this.state.salarySaved * 100).toFixed(0),
+                                '%'
+                            )
+                        ),
+                        _react2.default.createElement(_Slider2.default, {
+                            min: 0,
+                            max: 0.5,
+                            step: 0.01,
+                            defaultValue: 0.02,
+                            value: this.state.salarySaved,
+                            onChange: this.handleSalarySaved
+                        })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-3' },
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'fontSize': 'medium' } },
+                            'Money Already Saved'
+                        ),
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'paddingLeft': '20px' } },
+                            _react2.default.createElement(
+                                'h1',
+                                null,
+                                '$',
+                                this.formatMoney(this.state.alreadySaved, 0, '.', ',')
+                            )
+                        ),
+                        _react2.default.createElement(_Slider2.default, {
+                            min: 0,
+                            max: 99500,
+                            step: 500,
+                            defaultValue: 5000,
+                            value: this.state.alreadySaved,
+                            onChange: this.handleAlreadySaved
+                        })
+                    ),
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'col-md-3' },
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'fontSize': 'medium' } },
+                            'Expected Yearly Market Return'
+                        ),
+                        _react2.default.createElement(
+                            'span',
+                            { style: { 'paddingLeft': '20px' } },
+                            _react2.default.createElement(
+                                'h1',
+                                null,
+                                (this.state.marketReturn * 100).toFixed(0),
+                                '%'
+                            )
+                        ),
+                        _react2.default.createElement(_Slider2.default, {
+                            min: 0,
+                            max: 0.2,
+                            step: 0.01,
+                            defaultValue: 0.03,
+                            value: this.state.marketReturn,
+                            onChange: this.handleMarketReturn
+                        })
+                    )
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { id: 'chartContainer' },
+                    _react2.default.createElement(
+                        'div',
+                        { id: 'finalSavings' },
+                        _react2.default.createElement(
+                            'h1',
+                            null,
+                            'Savings By Retirement'
+                        ),
+                        _react2.default.createElement('br', null),
+                        _react2.default.createElement(
+                            'h1',
+                            null,
+                            '$',
+                            this.formatMoney(this.state.finalAmount, 0, '.', ',')
+                        )
+                    ),
+                    _react2.default.createElement(
+                        _recharts.ResponsiveContainer,
+                        null,
+                        _react2.default.createElement(
+                            _recharts.LineChart,
+                            {
+                                data: this.state.data,
+                                margin: { top: 5, right: 30, left: 20, bottom: 5 } },
+                            _react2.default.createElement(_recharts.XAxis, { dataKey: 'date', tickFormatter: function tickFormatter(date) {
+                                    return date.slice(2).split('-').join(' ');
+                                } }),
+                            _react2.default.createElement(_recharts.YAxis, { tickFormatter: function tickFormatter(num) {
+                                    return '$' + _this2.formatMoney(num, 0, '.', ',');
+                                } }),
+                            _react2.default.createElement(_recharts.Tooltip, { labelFormatter: function labelFormatter(date) {
+                                    return date.slice(2).split('-').join(' ');
+                                }, formatter: function formatter(num) {
+                                    return '$' + _this2.formatMoney(num, 0, '.', ',');
+                                } }),
+                            _react2.default.createElement(_recharts.Line, { isAnimationActive: false, type: 'monotone', dataKey: 'saved', stroke: '#8884d8', activeDot: { r: 8 } })
+                        )
                     )
                 )
             );
@@ -31596,9 +31653,6 @@ var Sliders = function (_Component) {
 
     return Sliders;
 }(_react.Component);
-
-//                        <CartesianGrid strokeDasharray="1 1" />  you can add this back under YAxis for the LineChart
-
 
 exports.default = Sliders;
 

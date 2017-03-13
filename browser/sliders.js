@@ -10,7 +10,7 @@ export default class Sliders extends Component {
 
         this.state = {
             currentAge: 25,
-            retireAge: 70,
+            retireAge: 65,
             salary: 65000,
             salaryIncrease: 0.02,
             salarySaved: 0.05,
@@ -18,7 +18,7 @@ export default class Sliders extends Component {
             marketReturn: 0.03,
             data: [],
             finalAmount: 0,
-            finalSal: 0,
+            RAM: 0,
             curDay: new Date()
         };
 
@@ -47,7 +47,6 @@ export default class Sliders extends Component {
     }
 
     handleCurrentAge (event, value){
-        //event.preventDefault()
         if (value > this.state.retireAge) {
             this.setState({currentAge: value, retireAge: value + 1});
         }
@@ -79,35 +78,29 @@ export default class Sliders extends Component {
             this.setState({retireAge: value});
             this.doTheDataThrottle();
         }
-
     }
 
     handleSalary (event, value){
-        //event.preventDefault()
         this.setState({salary: value});
         this.doTheDataThrottle();
     }
 
     handleSalaryIncrease (event, value){
-        //event.preventDefault()
         this.setState({salaryIncrease: value});
         this.doTheDataThrottle();
     }
 
     handleSalarySaved (event, value){
-        //event.preventDefault()
         this.setState({salarySaved: value});
         this.doTheDataThrottle();
     }
 
     handleAlreadySaved (event, value){
-        //event.preventDefault()
         this.setState({alreadySaved: value});
         this.doTheDataThrottle();
     }
 
     handleMarketReturn (event, value){
-        //event.preventDefault()
         this.setState({marketReturn: value});
         this.doTheDataThrottle();
     }
@@ -156,7 +149,7 @@ export default class Sliders extends Component {
 
             if(x === months-1){
                 this.setState({
-                    finalSal: curSalary,
+                    RAM: (endOfMonthSaved + monthlyFromSalary)/curSalary,
                     finalAmount: endOfMonthSaved + monthlyFromSalary
                 });
             }
@@ -187,121 +180,125 @@ export default class Sliders extends Component {
         return string;
     }
 
-
     render () {
-
-        const styles = {
-            root: {
-                display: 'flex',
-                height: 84,
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-            },
-        };
-
         return (
             <div>
-                <h1>Retirement Calculator</h1>
-                <div style={styles.root}>
-                    <b>How old are you </b>
-                    <h1>{this.state.currentAge}</h1>
-                    <Slider
-                        min={0}
-                        max={100}
-                        step={1}
-                        defaultValue={25}
-                        value={this.state.currentAge}
-                        onChange={this.handleCurrentAge}
-                        style={{width: 200}}
-                    />
-                    <b>Target Retirement Age</b>
-                    <h1>{this.state.retireAge}</h1>
-                    <Slider
-                        min={this.state.currentAge + 1}
-                        max={101}
-                        step={1}
-                        defaultValue={70}
-                        value={this.state.retireAge}
-                        onChange={this.handleRetireAge}
-                        style={{width: 200}}
-                    />
-                    <b>Current Salary (post-tax)</b>
-                    <h1>${this.formatMoney(this.state.salary, 0, '.', ',')}</h1>
-                    <Slider
-                        min={0}
-                        max={500000}
-                        step={500}
-                        defaultValue={65000}
-                        value={this.state.salary}
-                        onChange={this.handleSalary}
-                        style={{width: 200}}
-                    />
-                    <b>Expected Salary Increase/year</b>
-                    <h1>{(this.state.salaryIncrease * 100).toFixed(0)}%</h1>
-                    <Slider
-                        min={0}
-                        max={.1}
-                        step={0.01}
-                        defaultValue={0.02}
-                        value={this.state.salaryIncrease}
-                        onChange={this.handleSalaryIncrease}
-                        style={{width: 200}}
-                    />
+                <div id="title">
+                    <span style={{'paddingRight': '20px'}}><h1>Retirement Calculator</h1></span>
+                    <span style={{'fontSize':'medium'}}>by Jacob Cohen</span>
+                    {/*<h1>Retirement Calculator</h1>*/}
                 </div>
-                <div style={styles.root}>
-                    <b>Percent of salary saved/year</b>
-                    <h1>{(this.state.salarySaved * 100).toFixed(0)}%</h1>
-                    <Slider
-                        min={0}
-                        max={1}
-                        step={0.05}
-                        defaultValue={0.02}
-                        value={this.state.salarySaved}
-                        onChange={this.handleSalarySaved}
-                        style={{width: 200}}
-                    />
-                    <b>Money Already Saved</b>
-                    <h1>${this.formatMoney(this.state.alreadySaved, 0, '.', ',')}</h1>
-                    <Slider
-                        min={0}
-                        max={100000}
-                        step={500}
-                        defaultValue={5000}
-                        value={this.state.alreadySaved}
-                        onChange={this.handleAlreadySaved}
-                        style={{width: 500}}
-                    />
-                    <b>Expected Yearly Market Return</b>
-                    <h1>{(this.state.marketReturn * 100).toFixed(0)}%</h1>
-                    <Slider
-                        min={0}
-                        max={0.2}
-                        step={0.01}
-                        defaultValue={0.03}
-                        value={this.state.marketReturn}
-                        onChange={this.handleMarketReturn}
-                        style={{width: 500}}
-                    />
-                </div>
-                <div id="finalSavings">
-                    <h1>SAVINGS BY RETIREMENT</h1>
-                    <h1>${ this.formatMoney(this.state.finalAmount,0,'.',',') }</h1>
-                </div>
-                <ResponsiveContainer position="absolute" width="80%" height={500}>
-                    <LineChart  data={this.state.data}
-                               margin={{top: 5, right: 30, left: 20, bottom: 5}}
-                    >
-                        <XAxis dataKey="date" tickFormatter={(date) => date.slice(2).split('-').join(' ')} />
-                        <YAxis tickFormatter={(num) => '$' + this.formatMoney(num, 0, '.', ',')} />
-                        <Tooltip labelFormatter={(date) => date.slice(2).split('-').join(' ')} formatter={(num) => '$' + this.formatMoney(num, 0, '.', ',')} />
-                        <Line isAnimationActive={false} type="monotone" dataKey="saved" stroke="#8884d8" activeDot={{r: 8}}/>
-                    </LineChart>
-                </ResponsiveContainer>
+                <div id="line"></div>
+                <div className="sliderRow">
+                    <div className="col-md-4">
+                        <div className="textAboveSlider">
+                            <span style={{'fontSize':'medium'}}>Current Age</span>
+                            <span style={{'paddingLeft': '20px'}}><h1>{this.state.currentAge}</h1></span>
+                        </div>
+                        <Slider
+                            min={0}
+                            max={100}
+                            step={1}
+                            defaultValue={25}
+                            value={this.state.currentAge}
+                            onChange={this.handleCurrentAge}
+                        />
+                    </div>
+                    <div className="col-md-4">
+                        <span style={{'fontSize':'medium'}}>Target Retirement Age</span>
+                        <span style={{'paddingLeft': '20px'}}><h1>{this.state.retireAge}</h1></span>
+                        <Slider
+                            min={this.state.currentAge + 1}
+                            max={101}
+                            step={1}
+                            defaultValue={70}
+                            value={this.state.retireAge}
+                            onChange={this.handleRetireAge}
+                        />
+                    </div>
+                    <div className="col-md-4">
+                        <span style={{'fontSize':'medium'}}>Current Salary (Post-Tax)</span>
+                        <span style={{'paddingLeft': '20px'}}><h1>${this.formatMoney(this.state.salary, 0, '.', ',')}</h1></span>
+                        <Slider
+                            min={0}
+                            max={500000}
+                            step={500}
+                            defaultValue={65000}
+                            value={this.state.salary}
+                            onChange={this.handleSalary}
+                        />
+                    </div>
 
+                </div>
+                <div className="sliderRow">
+                    <div className="col-md-3">
+                        <span style={{'fontSize':'medium'}}>Expected Salary Increase/Year</span>
+                        <span style={{'paddingLeft': '20px'}}><h1>{(this.state.salaryIncrease * 100).toFixed(0)}%</h1></span>
+                        <Slider
+                            min={0}
+                            max={0.1}
+                            step={0.01}
+                            defaultValue={0.02}
+                            value={this.state.salaryIncrease}
+                            onChange={this.handleSalaryIncrease}
+                        />
+                    </div>
+                    <div className="col-md-3">
+                        <span style={{'fontSize':'medium'}}>Percent of Salary Saved/Year</span>
+                        <span style={{'paddingLeft': '20px'}}><h1>{(this.state.salarySaved * 100).toFixed(0)}%</h1></span>
+                        <Slider
+                            min={0}
+                            max={0.5}
+                            step={0.01}
+                            defaultValue={0.02}
+                            value={this.state.salarySaved}
+                            onChange={this.handleSalarySaved}
+                        />
+                    </div>
+                    <div className="col-md-3">
+                        <span style={{'fontSize':'medium'}}>Money Already Saved</span>
+                        <span style={{'paddingLeft': '20px'}}><h1>${this.formatMoney(this.state.alreadySaved, 0, '.', ',')}</h1></span>
+                        <Slider
+                            min={0}
+                            max={99500}
+                            step={500}
+                            defaultValue={5000}
+                            value={this.state.alreadySaved}
+                            onChange={this.handleAlreadySaved}
+                        />
+                    </div>
+                    <div className="col-md-3">
+                        <span style={{'fontSize':'medium'}}>Expected Yearly Market Return</span>
+                        <span style={{'paddingLeft': '20px'}}><h1>{(this.state.marketReturn * 100).toFixed(0)}%</h1></span>
+                        <Slider
+                            min={0}
+                            max={0.2}
+                            step={0.01}
+                            defaultValue={0.03}
+                            value={this.state.marketReturn}
+                            onChange={this.handleMarketReturn}
+                        />
+                    </div>
+                </div>
+                <div id="chartContainer">
+                    <div id="finalSavings">
+                        <h1>Savings By Retirement</h1><br />
+                        <h1>${ this.formatMoney(this.state.finalAmount,0,'.',',') }</h1>
+                    </div>
+                    <ResponsiveContainer >
+                        <LineChart
+                            data={this.state.data}
+                            margin={{top: 5, right: 30, left: 20, bottom: 5}}>
+                            <XAxis dataKey="date" tickFormatter={(date) => date.slice(2).split('-').join(' ')} />
+                            <YAxis tickFormatter={(num) => '$' + this.formatMoney(num, 0, '.', ',')} />
+                            <Tooltip labelFormatter={(date) => date.slice(2).split('-').join(' ')} formatter={(num) => '$' + this.formatMoney(num, 0, '.', ',')} />
+                            <Line isAnimationActive={false} type="monotone" dataKey="saved" stroke="#8884d8" activeDot={{r: 8}} />
+                            {/*<CartesianGrid strokeDasharray="1 1" />  <-- add this back to get a grid system*/}
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
             </div>
-        )
-
+        );
     }
 }
 
-//                        <CartesianGrid strokeDasharray="1 1" />  you can add this back under YAxis for the LineChart
